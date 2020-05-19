@@ -1,7 +1,7 @@
 Setup
 
 ```
-git clone https://github.com/gcanti/elm-ts-todomvc.git
+git clone https://github.com/IgorSkiljevic/tennis
 cd elm-ts-todomvc
 npm i
 npm start
