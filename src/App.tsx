@@ -4,6 +4,7 @@ import { Html } from 'elm-ts/lib/React'
 import { perform } from 'elm-ts/lib/Task'
 import { Task } from 'fp-ts/lib/Task'
 import * as React from 'react'
+import { assertNever } from './assertNever'
 
 // Model
 export type Player = 'player1'  | 'player2'
@@ -39,7 +40,8 @@ const increasePoints = (point: Point): Point | null => {
   switch (point) {
     case 'Love': return 'Fifteen';
     case 'Fifteen': return 'Thirty';
-    default: return null;
+    case 'Thirty': return null;
+    default: return assertNever(point);
   }
 }
 
@@ -92,7 +94,7 @@ const playPoint = (player: Player, model: Model): Model => {
       lastPointWonBy: player,
     };
     case 'GameData': return initialModel;
-    default: return initialModel;
+    default: return assertNever(score);
   }
 }
 
@@ -102,17 +104,10 @@ const pointsToString = (points: Point): string => {
     case 'Love': return '0';
     case 'Fifteen': return '15';
     case 'Thirty': return '30';
-    default: return '';
+    default: return assertNever(points);
   }
 }
 
-
-
-// UPDATE
-type Action = 
-  | { type: 'NextPoint' }
-  | { type: 'WinPoint', player: Player }
-  ;
 
 const generateOutput = (player: Player, model: Model): string => {
   const { score } = model;
@@ -122,12 +117,19 @@ const generateOutput = (player: Player, model: Model): string => {
     case 'Deuce': return 'Deuce';
     case 'AdventageData': return score.player === player ? 'Adventage' : '_';
     case 'GameData': return score.player === player ? 'Winner' : 'Loser';
-    default: return '';  
+    default: return assertNever(score);  
   }
 }
 
 const generatePlayer = ():Player => Math.random() > 0.5 ? 'player1' : 'player2';
 const generatePlayerTask: Task<Player> = new Task(() => Promise.resolve(generatePlayer()));
+
+
+// UPDATE
+type Action = 
+  | { type: 'NextPoint' }
+  | { type: 'WinPoint', player: Player }
+  ;
 
 export const update = (action: Action, model: Model): [Model, Cmd<Action>] => {
   switch(action.type) {
@@ -141,7 +143,8 @@ export const update = (action: Action, model: Model): [Model, Cmd<Action>] => {
           newModel,
           cmd.none
       ];
-    } 
+    }
+    default: return assertNever(action); 
   }
 }
 
